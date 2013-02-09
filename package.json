@@ -1,0 +1,11 @@
+{
+	"name" : "A Site By White Lion",
+	"jam" : {
+		"packageDir" : "public/js/vendor",
+		"baseDir" : "public",
+		"dependencies" : {
+			"jquery" : "1.9.0",
+			"bootstrap-sass" : "2.2.2-jam.1"
+		}
+	}
+}
