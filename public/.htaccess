@@ -1,6 +1,36 @@
+# mode rewrite
 <IfModule mod_rewrite.c>
-    Options -MultiViews
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+	Options +FollowSymlinks
+	RewriteEngine On
+	RewriteBase /
+	
+	# block access to files or directories that start with . or underscore
+	RewriteRule "(^|/)[_\.]" - [F,L]
+	
+	# robots.txt
+	RewriteCond %{HTTP_HOST} \.wliondev3\.com$ [NC]
+	RewriteRule ^robots.txt$ robots_dev.txt [L]
+	RewriteRule ^robots.txt$ robots_production.txt [L]
+	
+	# everything goes to the front
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule . index.php [L]
 </IfModule>
+
+# "-Indexes" will have Apache block users from browsing folders without a default document
+# Usually you should leave this activated, because you shouldn't allow everybody to surf through
+# every folder on your server (which includes rather private places like CMS system folders).
+<IfModule mod_autoindex.c>
+	Options -Indexes
+</IfModule>
+
+
+# Block access to backup and source files
+# This files may be left by some text/html editors and
+# pose a great security danger, when someone can access them
+<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~)$">
+	Order allow,deny
+	Deny from all
+	Satisfy All
+</FilesMatch>

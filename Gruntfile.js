@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 	});
 
 
-	grunt.registerTask('setup', ['composer-install', 'set-permissions', 'jam-install', 'upgrade-bootstrap']);
+	grunt.registerTask('setup', ['composer-install', 'set-permissions', 'jam-install', 'upgrade-bootstrap', 'move-files']);
 
 	grunt.registerTask('composer-install', function() {
 		var done = this.async(),
@@ -82,6 +82,16 @@ module.exports = function(grunt) {
 			});
 
 		})
+	});
+
+	grunt.registerTask('move-files', function() {
+		var fs = require('fs'),
+			path = require('path');
+
+		fs.writeFileSync('index.php', fs.readFileSync(path.join('public', 'index.php'), 'utf8').replace(/\.\.\/bootstrap/g, 'bootstrap'));
+		fs.unlinkSync(path.join('public', 'index.php'));
+		fs.writeFileSync('.htaccess', fs.readFileSync(path.join('public', '.htaccess'), 'utf8'));
+		fs.unlinkSync(path.join('public', '.htaccess'));
 	});
 
 };
