@@ -33,9 +33,26 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('set-permissions', function() {
 		var fs    = require('fs'),
+			path  = require('path'),
 			files = grunt.config.get('permissions');
+
+		function chmodSyncRecursive(file, mode) {
+			var fstats = fs.lstatSync(file);
+			if (fstats.isDirectory()) {
+				var dirFiles = fs.readdirSync(file);
+				for (var i = 0, l = dirFiles.length; i < l; i++) {
+					var curStats = fs.lstatSync(path.join(file, dirFiles[i]));
+					if (curStats.isDirectory()) {
+						chmodSyncRecursive(path.join(file, dirFiles[i]), mode);
+					}
+					fs.chmodSync(path.join(file, dirFiles[i]), mode);
+				}
+			}
+			fs.chmodSync(file, mode);
+		};
+
 		for(var f in files) {
-			fs.chmodSync(f, files[f]);
+			chmodSyncRecursive(f, files[f]);
 		}
 	});
 
